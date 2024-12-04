@@ -7,7 +7,14 @@ const router = createRouter({
     routes: [
         {
             path: "/",
-            component: AppLayout
+            component: AppLayout,
+            children: [
+                {
+                    path: "/",
+                    name: "professor-survey",
+                    component: () => import("@/views/ProfessorSurvey.vue")
+                },
+            ]
         },
         {
             path: "/team",

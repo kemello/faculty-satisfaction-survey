@@ -9,6 +9,7 @@
 
 @media (min-width: 992px) {
     .layout-wrapper {
+
         &.layout-overlay {
             .layout-main-container {
                 margin-left: 0;
@@ -19,7 +20,7 @@
                 transform: translateX(-100%);
                 left: 0;
                 top: 0;
-                height: 100vh;
+                height: fit-content; //edited from 100vh
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
                 border-right: 1px solid var(--surface-border);
@@ -72,13 +73,18 @@
         .layout-main-container {
             margin-left: 0;
             padding-left: 2rem;
+            padding-top: 2rem;
         }
 
         .layout-sidebar {
             transform: translateX(-100%);
-            left: 0;
+            position: sticky;
             top: 0;
-            height: 100vh;
+            left: 0;
+            padding: 0.5rem;
+            justify-self: center;
+            //height: 100vh;
+            height: fit-content; //edited from 100vh
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
             transition:

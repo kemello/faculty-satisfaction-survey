@@ -1,6 +1,6 @@
 <template>
-  <div class="flex sm:justify-center">
-    <ul class="m-0 list-none  p-2 flex flex-col gap-4 w-full ">
+  <div class="flex">
+    <ul class="flex flex-row gap-4 w-full sm:flex-col">
       <li
           v-for="user in users"
           :key="user.id"
@@ -18,20 +18,18 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { ProfessorService } from '@/service/ProfessorService.js';
 
 const selectedUser = ref();
-const users = ref([
-  { id: 0, name: 'Amy Elsner', image: 'amyelsner.png'},
-  { id: 1, name: 'Anna Fali', image: 'annafali.png'},
-  { id: 2, name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-  { id: 3, name: 'Bernardo Dominic', image: 'bernardodominic.png'},
-  { id: 4, name: 'Elwin Sharvill', image: 'elwinsharvill.png' }
-]);
+const users = ref([]);
 
 const avatar = computed(() => 'w-8 h-8 xl:w-24 xl:h-24 lg:w-20 lg:h-20 md:w-16 md:h-16');
 const username = computed(() => 'font-bold xl:text-xl lg:text-lg md:text-md hidden sm:flex');
 
-
+onMounted(() => {
+    const professors = ProfessorService.getProfessors();
+    users.value = professors[0].users;
+});
 </script>
 

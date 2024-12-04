@@ -1,7 +1,7 @@
 @use "mixins";
 
 .layout-sidebar {
-    position: relative;
+    position: fixed;
     //width: 20rem;
     width: fit-content;
     max-height: calc(100vh - 8rem);
@@ -17,7 +17,7 @@
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
     border-radius: var(--content-border-radius);
-    padding: 0.5rem 0.5rem;
+    padding: 1rem 1rem;
 }
 
 .layout-menu {
