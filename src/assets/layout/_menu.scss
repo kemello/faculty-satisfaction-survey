@@ -1,7 +1,7 @@
 @use "mixins";
 
 .layout-sidebar {
-    position: fixed;
+    position: relative;
     //width: 20rem;
     width: fit-content;
     max-height: calc(100vh - 8rem);
@@ -10,8 +10,8 @@
     z-index: 999;
     overflow-y: auto;
     user-select: none;
-    top: 4rem;
-    left: 2rem;
+    //top: 4rem;
+    //left: 2rem;
     transition:
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration);

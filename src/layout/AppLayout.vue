@@ -1,5 +1,5 @@
 <template>
-  <div class="layout-wrapper grid flex-wrap" :class="containerClass">
+  <div class="layout-wrapper" :class="containerClass">
     <app-sidebar></app-sidebar>
     <div class="layout-main-container">
       <div class="layout-main">
