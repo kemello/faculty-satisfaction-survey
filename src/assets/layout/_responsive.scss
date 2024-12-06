@@ -70,30 +70,40 @@
     }
 
     .layout-wrapper {
-        flex-wrap: wrap;
         margin: 0;
+        flex-wrap: wrap;
+        justify-content: flex-start;
         .layout-main-container {
+            margin: 0 2rem 0 2rem;
             //margin-left: 0;
+            .card {
+                padding: 1rem;
+            }
         }
 
         .layout-sidebar {
             transform: translateX(-100%);
             position: sticky;
+            min-width: 290px;
+            width: 100vh;
+            //margin: 0 0.5rem 0 0.5rem;
             top: 0;
             left: 0;
             padding: 0.5rem;
             justify-self: center;
+            overflow: scroll;
             //height: 100vh;
             height: fit-content; //edited from 100vh
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
             transition: transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
             left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
+
+            ul {
+                justify-content: space-evenly;
+            }
         }
 
-        .layout-main-container {
-            padding: 0 2rem 0 2rem;
-        }
 
         .layout-mask {
             display: none;

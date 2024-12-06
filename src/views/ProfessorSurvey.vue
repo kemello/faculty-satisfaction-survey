@@ -7,11 +7,11 @@
                     <span class="font-bold p-2">Amy Elsner</span>
                 </div>
             </template>
-            <div class="card flex flex-col justify-center items-center bg-surface-800">
+            <div class="card sub-card">
                 <p class="m-0">
-                    Степень доступности материала для понимания
+                    Ясное и доступное изложение учебного материала
                 </p>
-                <Rating v-model="value">
+                <Rating v-model="value1">
                     <template #onicon>
                         <img src="https://primefaces.org/cdn/primevue/images/rating/custom-onicon.png" height="24"
                              width="24"/>
@@ -22,11 +22,11 @@
                     </template>
                 </Rating>
             </div>
-            <div class="card flex flex-col justify-center items-center bg-surface-800">
+            <div class="card sub-card">
                 <p class="m-0">
-                    Степень доступности материала для понимания
+                    Умеет вызвать и поддержать интерес к предмету
                 </p>
-                <Rating v-model="value">
+                <Rating v-model="value2">
                     <template #onicon>
                         <img src="https://primefaces.org/cdn/primevue/images/rating/custom-onicon.png" height="24"
                              width="24"/>
@@ -37,6 +37,58 @@
                     </template>
                 </Rating>
             </div>
+            <div class="card sub-card">
+                <p class="m-0">
+                    Вопросы на модулях, экзамене соответствуют содержанию аудиторных занятий
+                </p>
+                <Rating v-model="value3">
+                    <template #onicon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-onicon.png" height="24"
+                             width="24"/>
+                    </template>
+                    <template #officon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-officon.png" height="24"
+                             width="24"/>
+                    </template>
+                </Rating>
+            </div>
+            <div class="card sub-card">
+                <p class="m-0">
+                    Доброжелательность и тактичность в отношениях со студентами
+                </p>
+                <Rating v-model="value4">
+                    <template #onicon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-onicon.png" height="24"
+                             width="24"/>
+                    </template>
+                    <template #officon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-officon.png" height="24"
+                             width="24"/>
+                    </template>
+                </Rating>
+            </div>
+            <div class="card sub-card">
+                <p class="m-0">
+                    Объективность в оценке знаний студентов
+                </p>
+                <Rating v-model="value5">
+                    <template #onicon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-onicon.png" height="24"
+                             width="24"/>
+                    </template>
+                    <template #officon>
+                        <img src="https://primefaces.org/cdn/primevue/images/rating/custom-officon.png" height="24"
+                             width="24"/>
+                    </template>
+                </Rating>
+            </div>
+            <div class="card sub-card">
+                <p class="m-0">
+                    Дополнительные комментарии  и предложения
+                </p>
+                <Textarea placeholder="Your Message" :autoResize="true" class="textarea"/>
+            </div>
+
         </Fieldset>
     </div>
 
@@ -45,5 +97,23 @@
 <script setup>
 import {ref} from 'vue';
 
-const value = ref(null);
+const value1 = ref(null);
+const value2 = ref(null);
+const value3 = ref(null);
+const value4 = ref(null);
+const value5 = ref(null);
 </script>
+
+<style scoped>
+
+.sub-card {
+    @apply flex flex-col justify-center items-center bg-surface-800 gap-2;
+    p {
+        @apply xl:text-xl lg:text-lg md:text-base sm:text-sm;
+    }
+}
+
+.textarea {
+    @apply w-full;
+}
+</style>
