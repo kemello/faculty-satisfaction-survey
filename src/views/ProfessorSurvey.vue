@@ -86,11 +86,15 @@
                 <p class="m-0">
                     Дополнительные комментарии  и предложения
                 </p>
-                <Textarea placeholder="Your Message" :autoResize="true" class="textarea"/>
+                <Textarea placeholder="Your Message" :autoResize="true" class="w-full"/>
             </div>
-
         </Fieldset>
     </div>
+
+    <div class="w-full flex items-center justify-center">
+        <Button class="w-full h-12 max-w-[12rem] sm:max-w-[17.35rem] mx-auto" disabled alt="J" label="Отправить"/>
+    </div>
+
 
 </template>
 
@@ -113,7 +117,4 @@ const value5 = ref(null);
     }
 }
 
-.textarea {
-    @apply w-full;
-}
 </style>
