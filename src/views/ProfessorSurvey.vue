@@ -111,7 +111,8 @@ const value5 = ref(null);
 <style scoped>
 
 .sub-card {
-    @apply flex flex-col justify-center items-center bg-surface-800 gap-2;
+    @apply flex flex-col justify-center items-center gap-2;
+    background: var(--code-background);
     p {
         @apply xl:text-xl lg:text-lg md:text-base sm:text-sm;
     }
