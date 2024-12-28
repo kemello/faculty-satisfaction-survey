@@ -70,8 +70,8 @@
         flex-wrap: wrap;
         justify-content: space-around;
         .layout-main-container {
-            margin: 0 1rem 0 1rem;
-            //margin-left: 0;
+            min-width: 258px;
+            margin: 0 1rem;
             .card {
                 padding: 1rem;
             }
