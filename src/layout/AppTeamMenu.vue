@@ -1,6 +1,6 @@
 <template>
   <div class="flex">
-    <ul class="flex flex-row gap-0 sm:gap-4 w-full sm:flex-col">
+    <ul class="flex flex-col gap-0 sm:gap-4 w-full">
       <li
           v-for="user in users"
           :key="user.id"

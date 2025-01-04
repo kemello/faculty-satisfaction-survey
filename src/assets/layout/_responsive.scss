@@ -19,7 +19,7 @@
             }
 
             .layout-sidebar {
-                transform: translateX(-100%);
+                    transform: translateX(-100%);
                 left: 0;
                 top: 0;
                 height: fit-content; //edited from 100vh
@@ -78,28 +78,22 @@
         }
 
         .layout-sidebar {
-            transform: translateX(-100%);
-            position: sticky;
-            min-width: 290px;
-            width: 100vh;
-            //margin: 0 0.5rem 0 0.5rem;
-            top: 0;
-            left: 0;
-            padding: 0.5rem;
-            justify-self: center;
-            overflow: scroll;
-            //height: 100vh;
-            height: fit-content; //edited from 100vh
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-            transition: transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
-            left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-
-            ul {
-                justify-content: space-evenly;
-            }
+            display: none;
         }
 
+        .layout-sidebar-mobile{
+            display: unset;
+            position: sticky;
+            min-width: 290px;
+            top: 0;
+            justify-self: center;
+            //justify-items: center;
+            width: 100vh;
+            //border-top-left-radius: 0;
+            //border-top-right-radius: 0;
+            //transition: transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
+            //left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
+        }
 
         .layout-mask {
             display: none;
@@ -127,5 +121,6 @@
 @media (min-width: 426px) and (max-width: 1024px) {
     .layout-wrapper{
         margin: 2rem;
+        //gap: 2rem;
     }
 }

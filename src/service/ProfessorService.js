@@ -27,6 +27,11 @@ export const ProfessorService = {
                         "id": 4,
                         "name": "Elwin Sharvill",
                         "image": "elwinsharvill.png"
+                    },
+                    {
+                        "id": 5,
+                        "name": "Elwin Sharvill",
+                        "image": "elwinsharvill.png"
                     }
                 ]
             }
