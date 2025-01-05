@@ -118,4 +118,8 @@ const value5 = ref(null);
     }
 }
 
+.p-rating {
+    position: unset;
+}
+
 </style>

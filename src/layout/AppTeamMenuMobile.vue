@@ -1,7 +1,10 @@
 <template>
     <div class="card">
         <Tabs value="0" scrollable>
-            <TabList>
+            <TabList :pt="{
+                root: { style: { justifyContent: 'space-around'} },
+                content: { style: { flexGrow: '0' } }
+            }">
                 <Tab
                     v-for="user in users"
                     :key="user.id"
@@ -30,20 +33,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.p-tabs {
-    //width: fit-content;
-    //min-width: 150px;
 
-}
-
-.p-tablist {
-    //flex-direction: column;
-    //align-items: center;
-    //width: fit-content;
-    //min-width: 150px;
-}
-
-.card {
-    //width: fit-content;
-}
 </style>

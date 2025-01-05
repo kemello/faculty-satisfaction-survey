@@ -16,6 +16,7 @@ import AppTeamMenuMobile from "@/layout/AppTeamMenuMobile.vue";
 <style lang="scss" scoped>
 
 .layout-sidebar-mobile {
-  display: none;
+    display: none;
+    width: 100%;
 }
 </style>
