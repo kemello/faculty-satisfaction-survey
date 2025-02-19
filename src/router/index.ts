@@ -1,7 +1,7 @@
 import AppLayout from "@/layout/AppLayout.vue";
-import AppTeamMenu from "@/layout/AppTeamMenu.vue";
-import AppTopBar from "@/layout/AppTeamMenuMobile.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import StudentInfoSurvey from "@/views/StudentInfoSurvey.vue";
+import ProfessorSurvey from "@/views/ProfessorSurvey.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -12,18 +12,25 @@ const router = createRouter({
             children: [
                 {
                     path: "/",
+                    name: "student-info-survey",
+                    component: StudentInfoSurvey,
+                    meta: { showSidebar: false }
+                },
+                {
+                    path: "/professor-survey",
                     name: "professor-survey",
-                    component: () => import("@/views/ProfessorSurvey.vue")
+                    component: ProfessorSurvey,
+                    meta: { showSidebar: true }
                 },
             ]
         },
         {
             path: "/team",
-            component: AppTeamMenu
+            component: () => import("@/layout/AppTeamMenu.vue")
         },
         {
             path: "/tabs",
-            component: AppTopBar
+            component: () => import("@/layout/AppTeamMenuMobile.vue")
         }
     ]
 });

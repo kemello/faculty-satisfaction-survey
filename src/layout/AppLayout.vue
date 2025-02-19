@@ -1,6 +1,7 @@
 <template>
   <div class="layout-wrapper" :class="containerClass">
-    <app-sidebar></app-sidebar>
+    <!-- Conditionally render the sidebar -->
+    <app-sidebar v-if="shouldShowSidebar"></app-sidebar>
     <div class="layout-main-container">
       <div class="layout-main">
         <router-view></router-view>
@@ -14,9 +15,10 @@
 import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
 import AppSidebar from "@/layout/AppSidebar.vue";
+import { useRoute } from 'vue-router';
 
 const { layoutConfig, layoutState } = useLayout();
-
+const route = useRoute();
 
 const containerClass = computed(() => {
   return {
@@ -28,6 +30,10 @@ const containerClass = computed(() => {
   };
 });
 
+// Computed property to determine if the sidebar should be shown
+const shouldShowSidebar = computed(() => {
+  return route.meta.showSidebar;
+});
 </script>
 
 <style scoped>
