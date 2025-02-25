@@ -12,11 +12,11 @@
         <Fieldset legend="Курс">
             <div class="card sub-card">
                 <div class="flex flex-col gap-4">
-                        <div v-for="year in academicYears" :key="year.value" class="flex items-center gap-2">
-                            <RadioButton :inputId="year.value" name="academicYear"
-                                         :value="year.value" v-model="selectedAcademicYear"/>
-                            <label :for="year.value">{{ year.name }}</label>
-                        </div>
+                    <div v-for="year in academicYears" :key="year.value" class="flex items-center gap-2">
+                        <RadioButton :inputId="year.value" name="academicYear"
+                                     :value="year.value" v-model="selectedAcademicYear"/>
+                        <label :for="year.value">{{ year.name }}</label>
+                    </div>
                 </div>
             </div>
         </Fieldset>
@@ -56,38 +56,42 @@
 
 <script setup>
 import {ref} from 'vue';
+import {useRouter} from 'vue-router'; // Import useRouter
+import {useStudentStore} from "@/stores/studentStore.js";
+
+const studentStore = useStudentStore();
+
+const router = useRouter(); // Initialize router
 
 const gender = ref("");
 const genderOptions = ref([
-    { name: "Мужской", value: "MALE" },
-    { name: "Женский", value: "FEMALE" }
+    {name: "Мужской", value: "MALE"},
+    {name: "Женский", value: "FEMALE"}
 ]);
 
 const academicYears = ref([
-    { name: "1 курс", value: "1" },
-    { name: "2 курс", value: "2" },
-    { name: "3 курс", value: "3" },
-    { name: "4 курс", value: "4" },
-    { name: "5 курс", value: "5" }
+    {name: "1 курс", value: "1"},
+    {name: "2 курс", value: "2"},
+    {name: "3 курс", value: "3"},
+    {name: "4 курс", value: "4"},
+    {name: "5 курс", value: "5"}
 ]);
 const selectedAcademicYear = ref("");
 
 const faculties = ref([
-    { name: "Экономика", value: "ECONOMICS" },
-    { name: "Менеджмент", value: "MANAGEMENT" },
-    { name: "Туризм", value: "TOURISM" },
-    { name: "Информационные системы и технологии", value: "IST" },
-    { name: "Управление бизнесом", value: "BUSINESS_ADMINISTRATION" },
-    { name: "Лечебное дело", value: "GENERAL_MEDICINE" }
+    {name: "Экономика", value: "ECONOMICS"},
+    {name: "Менеджмент", value: "MANAGEMENT"},
+    {name: "Туризм", value: "TOURISM"},
+    {name: "Информационные системы и технологии", value: "IST"},
+    {name: "Управление бизнесом", value: "BUSINESS_ADMINISTRATION"},
+    {name: "Лечебное дело", value: "GENERAL_MEDICINE"}
 ]);
 const selectedFaculty = ref("");
 
-
-
 const studyModes = ref([
-    { name: "Очное", value: "FULL_TIME" },
-    { name: "Заочное", value: "PART_TIME" },
-    { name: "Магистратура", value: "MASTERS" }
+    {name: "Очное", value: "FULL_TIME"},
+    {name: "Заочное", value: "PART_TIME"},
+    {name: "Магистратура", value: "MASTERS"}
 ]);
 const selectedStudyMode = ref("");
 
@@ -112,10 +116,11 @@ const submitForm = async () => {
 
         console.log("Response status:", response.status); // Debugging Log
 
-
         if (response.ok) {
             const result = await response.json();
             console.log('Success:', result);
+            studentStore.setStudentData(formData);
+            await router.push({name: 'professor-survey'}); // Redirect to ProfessorSurvey.vue
         } else {
             console.error('Error:', response.statusText);
         }

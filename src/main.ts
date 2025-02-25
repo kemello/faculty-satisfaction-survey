@@ -8,9 +8,11 @@ import 'primeicons/primeicons.css';
 import ToastService from 'primevue/toastservice';
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
-
+import { createPinia } from 'pinia'; // Add this import
 
 const app = createApp(App);
+const pinia = createPinia(); // Create pinia instance
+
 const MyPreset = definePreset(Aura, {
     semantic: {
         primary: {
@@ -32,6 +34,7 @@ const MyPreset = definePreset(Aura, {
 
 app.use(router);
 app.use(ToastService);
+app.use(pinia); // Register pinia before any store usage
 app.use(PrimeVue, {
     theme: {
         preset: MyPreset,

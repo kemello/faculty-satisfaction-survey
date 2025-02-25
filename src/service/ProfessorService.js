@@ -1,3 +1,24 @@
+// export class ProfessorService {
+//     static async getProfessors() {
+//         try {
+//             const response = await fetch('http://localhost:8080/api/professors', {
+//                 method: 'POST',
+//                 headers: {'Content-Type': 'application/json'},
+//                 body: JSON.stringify({
+//                     faculty: "COMPUTER_SCIENCE",
+//                     academicYear: "THIRD_YEAR",
+//                     studyMode: "FULL_TIME"
+//                 })
+//             });
+//             if (!response.ok) throw new Error('Failed to fetch');
+//             return await response.json();
+//         } catch (error) {
+//             console.error('Error fetching professors:', error);
+//             return []; // Return empty array as fallback
+//         }
+//     }
+// }
+
 export const ProfessorService = {
     getProfessors: () => {
         return [
