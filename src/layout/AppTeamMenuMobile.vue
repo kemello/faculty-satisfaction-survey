@@ -27,7 +27,7 @@ const users = ref([]);
 
 onMounted(() => {
     const professors = ProfessorService.getProfessors();
-    users.value = professors[0].users;
+    users.value = professors[0].professors;
 });
 
 </script>

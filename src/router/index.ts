@@ -22,6 +22,11 @@ const router = createRouter({
                     component: ProfessorSurvey,
                     meta: { showSidebar: true }
                 },
+                // {
+                //     path: "/:pathMatch(.*)*",
+                //     name: "not-found",
+                //     component: () => import("@/views/NotFound.vue")
+                // }
             ]
         },
         {
@@ -31,6 +36,10 @@ const router = createRouter({
         {
             path: "/tabs",
             component: () => import("@/layout/AppTeamMenuMobile.vue")
+        },
+        {
+            path: "/test",
+            component: () => import("@/views/test.vue")
         }
     ]
 });
