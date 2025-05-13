@@ -70,11 +70,11 @@ const genderOptions = ref([
 ]);
 
 const academicYears = ref([
-    {name: "1 курс", value: "0"},
-    {name: "2 курс", value: "1"},
-    {name: "3 курс", value: "2"},
-    {name: "4 курс", value: "3"},
-    {name: "5 курс", value: "4"}
+    {name: "1 курс", value: "FIRST_YEAR"},
+    {name: "2 курс", value: "SECOND_YEAR"},
+    {name: "3 курс", value: "THIRD_YEAR"},
+    {name: "4 курс", value: "FOURTH_YEAR"},
+    {name: "5 курс", value: "FIFTH_YEAR"}
 ]);
 const selectedAcademicYear = ref("");
 

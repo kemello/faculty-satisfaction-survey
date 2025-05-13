@@ -1,60 +1,29 @@
 <template>
-<!--    <div class="rounded border border-surface-200 dark:border-surface-700 p-6 bg-surface-0 dark:bg-surface-900">-->
-<!--        <ul class="m-0 p-0 list-none">-->
-<!--            <li class="mb-4">-->
-<!--                <div class="flex">-->
-<!--                    <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>-->
-<!--                    <div class="self-center" style="flex: 1">-->
-<!--                        <Skeleton width="100%" class="mb-2"></Skeleton>-->
-<!--                        <Skeleton width="75%"></Skeleton>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </li>-->
-<!--            <li class="mb-4">-->
-<!--                <div class="flex">-->
-<!--                    <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>-->
-<!--                    <div class="self-center" style="flex: 1">-->
-<!--                        <Skeleton width="100%" class="mb-2"></Skeleton>-->
-<!--                        <Skeleton width="75%"></Skeleton>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </li>-->
-<!--            <li class="mb-4">-->
-<!--                <div class="flex">-->
-<!--                    <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>-->
-<!--                    <div class="self-center" style="flex: 1">-->
-<!--                        <Skeleton width="100%" class="mb-2"></Skeleton>-->
-<!--                        <Skeleton width="75%"></Skeleton>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </li>-->
-<!--            <li>-->
-<!--                <div class="flex">-->
-<!--                    <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>-->
-<!--                    <div class="self-center" style="flex: 1">-->
-<!--                        <Skeleton width="100%" class="mb-2"></Skeleton>-->
-<!--                        <Skeleton width="75%"></Skeleton>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </div>-->
+
     <div class="flex">
-        <div v-if="error" class="p-4 text-red-500">
-            Error loading professors: {{ error }}
+        <div v-if="loading" class="p-4 text-blue-500">
+            Loading professors...
         </div>
-        <ul class="flex flex-col gap-0 sm:gap-4 w-full">
+        <div v-else-if="error" class="p-4 text-red-500">
+            {{ error }}
+        </div>
+        <div v-else-if="users.length === 0" class="p-4 text-gray-500">
+            No professors found for your selection.
+        </div>
+        <ul v-else class="flex flex-col gap-0 sm:gap-4 w-full">
             <li
                 v-for="user in users"
                 :key="user.id"
                 :class="['p-2 hover:bg-emphasis rounded border border-transparent transition-all duration-200 flex items-center justify-content-between', { 'border-primary': selectedUser?.id === user.id }]"
+                @click="selectedUser = user"
             >
                 <div class="flex flex-2 items-center gap-3">
-                    <img :alt="user.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${user.image}`"
+                    <img v-if="user.image" :alt="user.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${user.image}`"
+                         :class="avatar"/>
+                    <img v-else :alt="user.name" src="https://primefaces.org/cdn/primevue/images/avatar/default-avatar.png"
                          :class="avatar"/>
                     <span :class="username">{{ user.name }}</span>
                 </div>
-
             </li>
         </ul>
         <Toast/>
@@ -63,29 +32,51 @@
 
 <script setup>
 import {computed, onMounted, ref} from 'vue';
-import {ProfessorService} from '@/service/ProfessorService.js';
+import axios from 'axios';
+import { useStudentStore } from '@/stores/studentStore.js';
+import Toast from 'primevue/toast';
 
 const selectedUser = ref();
 const users = ref([]);
+const loading = ref(false);
+const error = ref(null);
 
 const avatar = computed(() => 'w-16 h-16');
 const username = computed(() => 'font-bold text-md hidden sm:flex');
-import { useStudentStore } from '@/stores/studentStore.js'; // 新增
 
-const studentStore = useStudentStore(); // 使用学生数据存储
+const studentStore = useStudentStore();
+
 onMounted(async () => {
+    if (!studentStore.formData) {
+        error.value = "No student information available";
+        return;
+    }
+
+    loading.value = true;
     try {
         const { faculty, academicYear, studyMode } = studentStore.formData;
 
-        const professors = await ProfessorService.getProfessors(
-            faculty,
-            academicYear,
-            studyMode
-        );
-        users.value = professors[0]?.professors || []; // Add null safety
-    } catch (error) {
-        console.error('Failed to fetch professors:', error);
-        // Update store/state to show error message
+        console.log('Form data:', { faculty, academicYear, studyMode });
+
+        // Check if academicYear is valid
+        if (!academicYear) {
+            throw new Error("Academic year is required");
+        }
+
+        const response = await axios.get('http://localhost:8080/api/professors/by-assignments', {
+            params: {
+                faculty,
+                academicYear,
+                studyMode
+            }
+        });
+
+        users.value = response.data || [];
+    } catch (err) {
+        console.error('Failed to fetch professors:', err);
+        error.value = `Error loading professors: ${err.message}`;
+    } finally {
+        loading.value = false;
     }
 });
 </script>
@@ -94,8 +85,16 @@ onMounted(async () => {
 .flex {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    align-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+ul.flex {
+    width: 100%;
+    max-width: 600px;
+}
+
+li:hover {
+    cursor: pointer;
 }
 </style>
-
