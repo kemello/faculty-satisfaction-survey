@@ -3,13 +3,12 @@
         <professor-list></professor-list>
     </div>
     <div class="layout-sidebar-mobile">
-        <professor-list-mobile></professor-list-mobile>
+        <professor-list></professor-list>
     </div>
 </template>
 
 <script setup>
 import ProfessorList from '../components/ProfessorList.vue';
-import ProfessorListMobile from "@/components/ProfessorListMobile.vue";
 </script>
 
 

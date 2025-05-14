@@ -34,10 +34,6 @@ const router = createRouter({
             component: () => import("@/components/ProfessorList.vue")
         },
         {
-            path: "/tabs",
-            component: () => import("@/components/ProfessorListMobile.vue")
-        },
-        {
             path: "/test",
             component: () => import("@/views/test.vue")
         }
