@@ -31,11 +31,11 @@ const router = createRouter({
         },
         {
             path: "/team",
-            component: () => import("@/layout/AppTeamMenu.vue")
+            component: () => import("@/components/ProfessorList.vue")
         },
         {
             path: "/tabs",
-            component: () => import("@/layout/AppTeamMenuMobile.vue")
+            component: () => import("@/components/ProfessorListMobile.vue")
         },
         {
             path: "/test",

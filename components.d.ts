@@ -24,6 +24,8 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     Menu: typeof import('primevue/menu')['default']
     Panel: typeof import('primevue/panel')['default']
+    ProfessorList: typeof import('./src/components/ProfessorList.vue')['default']
+    ProfessorListMobile: typeof import('./src/components/ProfessorListMobile.vue')['default']
     RadioButton: typeof import('primevue/radiobutton')['default']
     Rating: typeof import('primevue/rating')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

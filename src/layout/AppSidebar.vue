@@ -1,15 +1,15 @@
 <template>
     <div class="layout-sidebar">
-        <app-team-menu></app-team-menu>
+        <professor-list></professor-list>
     </div>
     <div class="layout-sidebar-mobile">
-        <app-team-menu-mobile></app-team-menu-mobile>
+        <professor-list-mobile></professor-list-mobile>
     </div>
 </template>
 
 <script setup>
-import AppTeamMenu from './AppTeamMenu.vue';
-import AppTeamMenuMobile from "@/layout/AppTeamMenuMobile.vue";
+import ProfessorList from '../components/ProfessorList.vue';
+import ProfessorListMobile from "@/components/ProfessorListMobile.vue";
 </script>
 
 

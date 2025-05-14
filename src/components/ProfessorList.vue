@@ -20,7 +20,7 @@
                 <div class="flex flex-2 items-center gap-3">
                     <img v-if="user.image" :alt="user.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${user.image}`"
                          :class="avatar"/>
-                    <img v-else :alt="user.name" src="https://primefaces.org/cdn/primevue/images/avatar/default-avatar.png"
+                    <img v-else :alt="user.name" src="https://docs.gravatar.com/wp-content/uploads/2025/02/avatar-mysteryperson-20250210-256.png"
                          :class="avatar"/>
                     <span :class="username">{{ user.name }}</span>
                 </div>
