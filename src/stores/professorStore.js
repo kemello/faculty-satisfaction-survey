@@ -5,7 +5,8 @@ export const useProfessorStore = defineStore('professor', {
     state: () => ({
         professors: [],
         loading: false,
-        error: null
+        error: null,
+        selectedProfessor: null
     }),
     actions: {
         async fetchProfessors() {
@@ -18,6 +19,9 @@ export const useProfessorStore = defineStore('professor', {
             } finally {
                 this.loading = false;
             }
+        },
+        selectProfessor(professor) {
+            this.selectedProfessor = professor;
         }
     }
 });

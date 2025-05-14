@@ -3,8 +3,8 @@
         <Fieldset>
             <template #legend>
                 <div class="flex items-center pl-2">
-                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle"/>
-                    <span class="font-bold p-2">Amy Elsner</span>
+                    <Avatar :image="professorImage" shape="circle"/>
+                    <span class="font-bold p-2">{{ professorName }}</span>
                 </div>
             </template>
             <div class="card sub-card">
@@ -99,7 +99,24 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref, computed } from 'vue';
+import { useProfessorStore } from '@/stores/professorStore';
+import { getProfessorImage } from '@/utils/professorUtils';
+
+const professorStore = useProfessorStore();
+
+// Get the selected professor from the store
+const selectedProfessor = computed(() => professorStore.selectedProfessor);
+
+// Compute the professor's name, with a fallback
+const professorName = computed(() => {
+  return selectedProfessor.value?.name || 'No Professor Selected';
+});
+
+// Compute the professor's image URL using the utility function
+const professorImage = computed(() => {
+  return getProfessorImage(selectedProfessor.value);
+});
 
 const value1 = ref(null);
 const value2 = ref(null);
