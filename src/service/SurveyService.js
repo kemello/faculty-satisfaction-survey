@@ -28,13 +28,13 @@ export const SurveyService = {
   },
 
   /**
-   * Fetch professor survey questions from the API
-   * @param {number} professorId - The ID of the professor
-   * @returns {Promise<Array>} - The professor survey questions
+   * Fetch survey questions from the API
+   * @param {number} surveyId - The ID of the survey
+   * @returns {Promise<Array>} - The survey questions
    */
-  getProfessorSurveyQuestions: async (professorId) => {
+  getSurveyQuestions: async (surveyId) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/surveys/professor/${professorId}`, {
+      const response = await fetch(`http://localhost:8080/api/surveys/${surveyId}/questions`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -42,10 +42,59 @@ export const SurveyService = {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch professor survey questions: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch survey questions: ${response.status} ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      // Transform the data to match the expected format in the application
+      return data.map((question, index) => ({
+        id: index + 1, // Generate an id if not provided
+        text: question.questionText,
+        questionType: question.questionType,
+        questionCategory: question.category,
+        order: question.order,
+        options: question.options ? question.options.map((option, optIndex) => ({
+          id: optIndex + 1, // Generate an id for each option
+          text: option.text,
+          value: option.value
+        })) : []
+      }));
+    } catch (error) {
+      console.error('Error fetching survey questions:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Fetch professor survey questions from the API
+   * @param {number} professorId - The ID of the professor
+   * @returns {Promise<Array>} - The professor survey questions
+   */
+  getProfessorSurveyQuestions: async (professorId) => {
+    try {
+      // First try to get questions from the new endpoint
+      try {
+        const questions = await SurveyService.getSurveyQuestions(1);
+        // Return all questions without filtering
+        return questions.filter(q => q.questionCategory === 'FOR_PROFESSOR');
+      } catch (err) {
+        console.warn('Failed to fetch from new endpoint, falling back to old endpoint', err);
+
+        // Fall back to the old endpoint
+        const response = await fetch(`http://localhost:8080/api/surveys/professor/${professorId}/questions`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch professor survey questions: ${response.status} ${response.statusText}`);
+        }
+
+        return await response.json();
+      }
     } catch (error) {
       console.error('Error fetching professor survey questions:', error);
 
