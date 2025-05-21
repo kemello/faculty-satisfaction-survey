@@ -195,32 +195,28 @@ const submitSurvey = async () => {
   if (!isFormValid.value) return;
 
   try {
-    // Prepare the data for submission
+    // Prepare the data for submission according to API requirements
     const surveyData = {
-      professorId: selectedProfessor.value.id,
+      surveyId: 1, // Using a fixed surveyId of 1 as specified in the API example
       responses: Object.entries(responses).map(([questionId, value]) => ({
         questionId: parseInt(questionId),
-        value: Array.isArray(value) ? value.join(',') : value
+        content: Array.isArray(value) ? value.join(',') : value?.toString() || ''
       }))
     };
 
     console.log('Submitting survey data:', surveyData);
 
-    // TODO: Uncomment when API endpoint is ready
-    // const response = await fetch('http://localhost:8080/api/surveys/submit', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify(surveyData)
-    // });
+    const response = await fetch('http://localhost:8080/api/surveys/assign-responses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(surveyData)
+    });
 
-    // if (!response.ok) {
-    //   throw new Error(`Failed to submit survey: ${response.status} ${response.statusText}`);
-    // }
-
-    // For now, simulate a successful submission
-    await new Promise(resolve => setTimeout(resolve, 500));
+    if (!response.ok) {
+      throw new Error(`Failed to submit survey: ${response.status} ${response.statusText}`);
+    }
 
     toast.add({
       severity: 'success',
