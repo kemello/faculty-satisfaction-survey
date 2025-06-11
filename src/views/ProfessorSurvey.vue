@@ -195,44 +195,39 @@ const submitSurvey = async () => {
   if (!isFormValid.value) return;
 
   try {
-    // Prepare the data for submission according to API requirements
+    const validResponses = Object.entries(responses).reduce((acc, [questionId, value]) => {
+      const question = questions.value.find(q => q.id === parseInt(questionId));
+      if (question) {
+        acc.push({
+          questionId: question.id,
+          content: Array.isArray(value) ? value.join(',') : value?.toString() || ''
+        });
+      }
+      return acc;
+    }, []);
+
     const surveyData = {
-      surveyId: 1, // Using a fixed surveyId of 1 as specified in the API example
-      responses: Object.entries(responses).map(([questionId, value]) => ({
-        questionId: parseInt(questionId),
-        content: Array.isArray(value) ? value.join(',') : value?.toString() || ''
-      }))
+      surveyId: 1,
+      responses: validResponses
     };
 
     console.log('Submitting survey data:', surveyData);
 
     const response = await fetch('http://localhost:8080/api/surveys/assign-responses', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(surveyData)
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to submit survey: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to submit survey: ${response.status} ${errorText}`);
     }
 
-    toast.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Survey submitted successfully',
-      life: 3000
-    });
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Survey submitted successfully', life: 3000 });
   } catch (err) {
     console.error('Failed to submit survey:', err);
-
-    toast.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: `Failed to submit survey: ${err.message}`,
-      life: 3000
-    });
+    toast.add({ severity: 'error', summary: 'Error', detail: `Failed to submit survey: ${err.message}`, life: 3000 });
   }
 };
 

@@ -48,14 +48,14 @@ export const SurveyService = {
       const data = await response.json();
 
       // Transform the data to match the expected format in the application
-      return data.map((question, index) => ({
-        id: index + 1, // Generate an id if not provided
+      return data.map((question) => ({
+        id: question.id, // Use the original id from the backend
         text: question.questionText,
         questionType: question.questionType,
         questionCategory: question.category,
         order: question.order,
-        options: question.options ? question.options.map((option, optIndex) => ({
-          id: optIndex + 1, // Generate an id for each option
+        options: question.options ? question.options.map((option) => ({
+          id: option.id || option.value, // Use the original id or value as fallback
           text: option.text,
           value: option.value
         })) : []
