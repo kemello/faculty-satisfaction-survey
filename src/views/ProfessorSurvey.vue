@@ -145,7 +145,8 @@ const fetchQuestions = async () => {
 
   try {
     const data = await SurveyService.getProfessorSurveyQuestions(selectedProfessor.value.id);
-    questions.value = data || [];
+    // Sort questions by their order property
+    questions.value = (data || []).sort((a, b) => a.order - b.order);
 
     // Reset responses object
     Object.keys(responses).forEach(key => {
@@ -207,8 +208,9 @@ const submitSurvey = async () => {
     }, []);
 
     const surveyData = {
-      surveyId: 1,
-      responses: validResponses
+        surveyId: 1,
+        professorId: selectedProfessor.value.id,
+        responses: validResponses
     };
 
     console.log('Submitting survey data:', surveyData);
