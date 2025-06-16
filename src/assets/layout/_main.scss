@@ -3,13 +3,34 @@
     flex-direction: column;
     min-height: 100vh;
     justify-content: space-between;
-    width: 100vh;
-    //padding: 4rem 2rem 0 2rem;
+    width: 100%;
+    max-width: 1400px; /* Increased max width for better space utilization */
+    margin: 0 auto;
+    padding: 0 1rem;
     transition: margin-left var(--layout-section-transition-duration);
 }
 
 .layout-main {
     flex: 1 1 auto;
     margin-bottom: 4rem;
-    //padding-bottom: 20rem;
+    width: 100%;
+}
+
+/* Responsive padding adjustments */
+@media (min-width: 768px) {
+    .layout-main-container {
+        padding: 0 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .layout-main-container {
+        padding: 0 3rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .layout-main-container {
+        padding: 0 4rem;
+    }
 }

@@ -1,132 +1,90 @@
 <template>
-    <div class="card">
-        <!-- Loading state -->
-        <div v-if="loading" class="card sub-card">
-            <ProgressSpinner />
-            <p class="m-0 text-center">Loading survey questions...</p>
+    <!-- Loading state -->
+    <div v-if="loading" class="card sub-card">
+        <ProgressSpinner />
+        <p class="loading-text">Загрузка вопросов анкеты...</p>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="error" class="card sub-card">
+        <p class="error-text">{{ error }}</p>
+        <Button label="Повторить" @click="fetchQuestions" class="retry-button" />
+    </div>
+
+    <!-- No questions state -->
+    <div v-else-if="questions.length === 0" class="card sub-card">
+        <p class="no-data-text">Вопросы анкеты недоступны.</p>
+    </div>
+
+    <!-- Survey Interface -->
+    <template v-else>
+        <!-- Survey Header -->
+        <div class="card">
+            <div class="survey-title">Оценка преподавателей</div>
+
+            <!-- Question Navigation -->
+            <QuestionNavigation
+                :current-question-index="currentQuestionIndex"
+                :total-questions="questions.length"
+                :can-proceed="canProceedToNextQuestion"
+                @previous-question="previousQuestion"
+                @next-question="nextQuestion"
+            />
         </div>
 
-        <!-- Error state -->
-        <div v-else-if="error" class="card sub-card">
-            <p class="m-0 text-red-500">{{ error }}</p>
-            <Button label="Retry" @click="fetchQuestions" class="mt-2" />
-        </div>
-
-        <!-- No questions state -->
-        <div v-else-if="questions.length === 0" class="card sub-card">
-            <p class="m-0 text-center">No survey questions available.</p>
-        </div>
-
-        <!-- Drag and Drop Interface -->
-        <template v-else>
-            <div class="question-navigation flex justify-between mb-4">
-                <Button
-                    icon="pi pi-arrow-left"
-                    @click="previousQuestion"
-                    :disabled="currentQuestionIndex === 0"
-                    class="p-button-rounded p-button-text"
-                />
-                <span class="question-counter">{{ currentQuestionIndex + 1 }} / {{ questions.length }}</span>
-                <Button
-                    icon="pi pi-arrow-right"
-                    @click="nextQuestion"
-                    :disabled="currentQuestionIndex === questions.length - 1 || !canProceedToNextQuestion"
-                    class="p-button-rounded p-button-text"
+        <!-- Main Survey Layout -->
+        <div class="survey-layout-container">
+            <!-- Left Sidebar: Professors List -->
+            <div class="professors-sidebar">
+                <ProfessorsList
+                    :available-professors="availableProfessors"
+                    @drop-to-source="onDropToSource"
+                    @drag-over-source="onDragOverSource"
+                    @drag-enter-source="onDragEnterSource"
+                    @drag-leave-source="onDragLeaveSource"
+                    @professor-drag-start="onDragStart"
+                    @professor-drag-end="onDragEnd"
                 />
             </div>
 
-            <!-- Current Question -->
-            <div class="current-question card sub-card mb-4">
-                <h3 class="text-xl font-bold mb-2">{{ currentQuestion.text }}</h3>
-                <p class="text-sm text-gray-500 mb-4">Перетащите преподавателей в соответствующие категории оценок</p>
-            </div>
+            <!-- Main Content Area -->
+            <div class="main-content-area">
+                <!-- Question Display -->
+                <QuestionDisplay
+                    :question-text="currentQuestion.text"
+                    :instruction-text="'Перетащите преподавателей в соответствующие категории оценок'"
+                    legend-text="Текущий вопрос"
+                />
 
-            <!-- Drag and Drop Container -->
-            <div class="drag-drop-container">
-                <div class="rating-interface flex flex-col md:flex-row gap-4">
-                    <!-- Available Professors List -->
-                    <div class="professors-source flex-shrink-0" style="min-width: 300px;">
-                        <div
-                            class="professors-list"
-                            @dragover.prevent="onDragOverSource"
-                            @dragenter.prevent="onDragEnterSource"
-                            @dragleave.prevent="onDragLeaveSource"
-                            @drop="onDropToSource"
-                        >
-                            <h4>Преподаватели для оценки</h4>
-                            <div class="overflow-auto" style="min-height: 25rem">
-                                <div
-                                    v-for="professor in availableProfessors"
-                                    :key="professor.id"
-                                    class="professor-item flex items-center p-2 mb-2 rounded cursor-move w-full"
-                                    draggable="true"
-                                    @dragstart="onDragStart($event, professor)"
-                                    @dragend="onDragEnd"
-                                >
-                                    <img
-                                        :src="getProfessorImage(professor)"
-                                        :alt="professor.name"
-                                        class="professor-item__avatar w-8 h-8 rounded-full mr-2"
-                                    >
-                                    <span class="professor-item__name">{{ professor.name }}</span>
-                                </div>
-                                <div v-if="availableProfessors.length === 0" class="empty-list-message">
-                                    Все преподаватели оценены!<br>
-                                    <small>Перетащите преподавателя сюда, чтобы убрать оценку</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rating Containers -->
-                    <div class="rating-containers flex-1 grid grid-cols-1 md:grid-cols-5 gap-2">
-                        <div
+                <!-- Rating Containers -->
+                <div class="rating-containers-section">
+                    <div class="rating-grid">
+                        <RatingContainer
                             v-for="rating in [1,2,3,4,5]"
                             :key="rating"
-                            class="rating-container border-2 border-dashed p-2 rounded-lg shadow-sm transition-all duration-200 w-full"
-                            :class="`rating-${rating}`"
-                            @dragover.prevent="onDragOver"
-                            @dragenter.prevent="onDragEnter"
-                            @dragleave.prevent="onDragLeave"
-                            @drop="onDrop($event, rating)"
-                            style="min-height: 25rem"
-                        >
-                            <div class="rating-header border-b pb-2 text-center">
-                                {{ rating }} {{ getRatingLabel(rating) }}
-                            </div>
-                            <div class="overflow-auto h-[calc(100%-2rem)]">
-                                <div
-                                    v-for="professor in getRatedProfessors(rating)"
-                                    :key="professor.id"
-                                    class="professor-item flex items-center p-2 mb-2 rounded w-full"
-                                    draggable="true"
-                                    @dragstart="onDragStart($event, professor)"
-                                    @dragend="onDragEnd"
-                                >
-                                    <img
-                                        :src="getProfessorImage(professor)"
-                                        :alt="professor.name"
-                                        class="professor-item__avatar w-8 h-8 rounded-full mr-2"
-                                    >
-                                    <span class="professor-item__name">{{ professor.name }}</span>
-                                </div>
-                                <div v-if="getRatedProfessors(rating).length === 0" class="empty-list-message">
-                                    Перетащите сюда преподавателя
-                                </div>
-                            </div>
-                        </div>
+                            :rating="rating"
+                            :rating-label="getRatingLabel(rating)"
+                            :rated-professors="getRatedProfessors(rating)"
+                            @drop="onDrop"
+                            @dragover="onDragOver"
+                            @dragenter="onDragEnter"
+                            @dragleave="onDragLeave"
+                            @professor-drag-start="onDragStart"
+                            @professor-drag-end="onDragEnd"
+                        />
                     </div>
                 </div>
             </div>
-        </template>
-    </div>
+        </div>
+    </template>
 
+    <!-- Submit Button -->
     <div class="w-full flex items-center justify-center">
         <Button
             class="w-full h-12 max-w-[12rem] sm:max-w-[17.35rem] mx-auto"
             :disabled="!isFormValid || loading"
             @click="submitSurvey"
-            label="Отправить"
+            label="Отправить анкету"
         />
     </div>
 
@@ -142,7 +100,14 @@ import { SurveyService } from '@/service/SurveyService';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
+import Fieldset from 'primevue/fieldset';
 import { useToast } from 'primevue/usetoast';
+
+// Import custom components
+import QuestionNavigation from '@/components/QuestionNavigation.vue';
+import ProfessorsList from '@/components/ProfessorsList.vue';
+import RatingContainer from '@/components/RatingContainer.vue';
+import QuestionDisplay from '@/components/QuestionDisplay.vue';
 import axios from 'axios';
 
 const toast = useToast();
@@ -452,509 +417,142 @@ const getRatedProfessors = (rating) => {
 </script>
 
 <style scoped>
-.sub-card {
+/* ==========================================================================
+   PROFESSOR SURVEY VIEW STYLES
+   Following StudentInfoSurvey.vue structure and styling approach
+   ========================================================================== */
+
+/* Survey Title - Following StudentInfoSurvey pattern */
+.survey-title {
+    font-weight: 500;
+    font-size: 1.875rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+    display: flex;
+}
+
+/* State Components - Following StudentInfoSurvey card pattern */
+.card.sub-card {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
     gap: 0.5rem;
-    background: var(--surface-card);
-    padding: 1rem;
-    border-radius: 0.5rem;
+    background: var(--code-background);
 }
 
-.sub-card p {
-    font-size: 1rem;
-    line-height: 1.5;
+.loading-text,
+.error-text,
+.no-data-text {
+    margin: 0;
+    text-align: center;
 }
 
-@media (min-width: 1280px) {
-    .sub-card p {
-        font-size: 1.25rem;
-    }
+.error-text {
+    color: #ef4444;
 }
 
-@media (min-width: 1024px) {
-    .sub-card p {
-        font-size: 1.125rem;
-    }
+.retry-button {
+    margin-top: 0.5rem;
 }
 
-@media (min-width: 768px) {
-    .sub-card p {
-        font-size: 1rem;
-    }
+/* Main Survey Layout Container */
+.survey-layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
-@media (max-width: 640px) {
-    .sub-card p {
-        font-size: 0.875rem;
-    }
+/* Left Sidebar: Professors List */
+.professors-sidebar {
+    width: 100%;
+    order: 2;
 }
 
-/* Center the loading spinner */
+/* Main Content Area */
+.main-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    order: 1;
+}
+
+/* Rating Containers Section */
+.rating-containers-section {
+    width: 100%;
+}
+
+/* Rating Grid - Responsive Layout */
+.rating-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+}
+
+/* Loading Spinner */
 .p-progress-spinner {
     margin: 0 auto;
 }
 
-/* Drag and drop container */
-.drag-drop-container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.rating-interface {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
+/* Tablet and Desktop Layout (768px and up) */
 @media (min-width: 768px) {
-    .rating-interface {
+    .survey-layout-container {
         flex-direction: row;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .professors-sidebar {
+        flex: 0 0 350px;
+        order: 1;
+        height: calc(100vh - 300px);
+        min-height: 500px;
+        position: sticky;
+        top: 1rem;
+    }
+
+    .main-content-area {
+        flex: 1;
+        order: 2;
+        min-width: 0;
+    }
+
+    .rating-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
     }
 }
 
-/* Professors source list */
-.professors-list {
-    background: var(--surface-card);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px dashed var(--surface-border);
-    min-height: 300px;
-}
+/* Desktop Layout (1024px and up) */
+@media (min-width: 1024px) {
+    .survey-layout-container {
+        gap: 3rem;
+    }
 
-.professors-list h4 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    text-align: center;
-    color: var(--text-color);
-}
+    .professors-sidebar {
+        flex: 0 0 400px;
+    }
 
-.professors-list.drag-over {
-    border-color: var(--primary-color);
-    border-style: solid;
-    background-color: var(--primary-50);
-    transform: scale(1.02);
-}
-
-/* Rating containers */
-.rating-containers {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-}
-
-@media (min-width: 768px) {
-    .rating-containers {
+    .rating-grid {
         grid-template-columns: repeat(5, 1fr);
+        gap: 1.25rem;
     }
 }
 
-@media (max-width: 576px) {
-    .rating-containers {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.rating-container {
-    background: var(--surface-card);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    border: 2px dashed var(--surface-border);
-    transition: all 0.2s ease-in-out;
-    min-height: 200px;
-}
-
-.rating-container:hover {
-    transform: scale(1.02);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.rating-container.drag-over {
-    transform: scale(1.05);
-    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
-    border-style: solid;
-}
-
-/* Rating headers */
-.rating-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--surface-border);
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-/* Professor items */
-.professor-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.25rem;
-    cursor: move;
-    background: var(--surface-ground);
-    transition: all 0.2s ease-in-out;
-    border: 1px solid transparent;
-}
-
-.professor-item:hover {
-    transform: translateX(5px);
-    background-color: var(--surface-hover);
-}
-
-/* Dragging state */
-.professor-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.professor-item__avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.professor-item__name {
-    font-weight: 500;
-    font-size: 0.875rem;
-    color: var(--text-color);
-}
-
-/* Empty list message */
-.empty-list-message {
-    color: var(--text-color-secondary);
-    font-style: italic;
-    text-align: center;
-    margin-top: 1rem;
-    padding: 1rem;
-}
-
-/* Rating container colors */
-.rating-1 { border-color: #ef4444 !important; }
-.rating-2 { border-color: #f97316 !important; }
-.rating-3 { border-color: #f59e0b !important; }
-.rating-4 { border-color: #84cc16 !important; }
-.rating-5 { border-color: #10b981 !important; }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .professor-item {
-        font-size: 0.8rem;
+/* Large Desktop Layout (1280px and up) */
+@media (min-width: 1280px) {
+    .survey-layout-container {
+        gap: 4rem;
     }
 
-    .professor-item__avatar {
-        width: 1.5rem;
-        height: 1.5rem;
+    .professors-sidebar {
+        flex: 0 0 450px;
     }
 
-    .rating-header {
-        font-size: 0.75rem;
-    }
-}
-
-/* Question navigation */
-.question-navigation {
-    background: var(--surface-card);
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
-
-.question-counter {
-    font-weight: bold;
-    min-width: 80px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Current question styling */
-.current-question h3 {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.current-question p {
-    color: var(--text-color-secondary);
-    margin-bottom: 0;
-}
-
-/* Mobile-specific improvements */
-@media (max-width: 768px) {
-    .drag-drop-container {
-        padding: 0.5rem;
-    }
-
-    .rating-interface {
-        gap: 0.75rem;
-    }
-
-    .professors-source {
-        min-width: unset !important;
-        width: 100%;
-    }
-
-    .professors-list {
-        min-height: 200px;
-    }
-
-    .rating-container {
-        min-height: 150px;
-    }
-
-    .question-navigation {
-        padding: 0.75rem;
-    }
-
-    .current-question {
-        padding: 0.75rem;
-    }
-
-    .current-question h3 {
-        font-size: 1.125rem;
-    }
-}
-
-/* Touch device improvements */
-@media (hover: none) and (pointer: coarse) {
-    .professor-item {
-        padding: 0.75rem;
-        margin-bottom: 0.75rem;
-        min-height: 3rem;
-    }
-
-    .professor-item__avatar {
-        width: 2.5rem;
-        height: 2.5rem;
-    }
-
-    .professor-item__name {
-        font-size: 1rem;
-    }
-
-    .rating-container {
-        min-height: 180px;
-        padding: 0.75rem;
-    }
-
-    .rating-header {
-        font-size: 1rem;
-        padding-bottom: 0.75rem;
-        margin-bottom: 0.75rem;
-    }
-}
-
-/* Accessibility improvements */
-.professor-item:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
-}
-
-.rating-container:focus-within {
-    border-color: var(--primary-color);
-    border-style: solid;
-}
-
-/* Animation improvements */
-.professor-item {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.rating-container {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.professors-list {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-</style>
-
-<style scoped>
-.professor-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-}
-
-/* Instructions card */
-.sub-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--surface-card);
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
-
-/* Drag and drop container */
-.drag-drop-container {
-    width: 100%;
-    max-width: 1200px;
-}
-
-.rating-interface {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-@media (min-width: 768px) {
-    .rating-interface {
-        flex-direction: row;
-    }
-}
-
-/* Professors source list */
-.professors-list {
-    background: var(--surface-card);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    border: 1px dashed var(--surface-border);
-    min-height: 300px;
-}
-
-.professors-list h4 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    text-align: center;
-    color: var(--text-color);
-}
-
-/* Rating containers */
-.rating-containers {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-}
-
-@media (min-width: 768px) {
-    .rating-containers {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-@media (max-width: 576px) {
-    .rating-containers {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-.rating-container {
-    background: var(--surface-card);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    border: 2px dashed var(--surface-border);
-    transition: all 0.2s ease-in-out;
-    min-height: 200px;
-}
-
-.rating-container:hover {
-    transform: scale(1.02);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.rating-container.drag-over {
-    transform: scale(1.05);
-    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.2);
-    border-style: solid;
-}
-
-/* Rating headers */
-.rating-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--surface-border);
-    font-weight: 600;
-    font-size: 0.875rem;
-}
-
-/* Professor items */
-.professor-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 0.25rem;
-    cursor: move;
-    background: var(--surface-ground);
-    transition: all 0.2s ease-in-out;
-    border: 1px solid transparent;
-}
-
-.professor-item:hover {
-    transform: translateX(5px);
-    background-color: var(--surface-hover);
-}
-
-/* Dragging state */
-.professor-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
-.professor-item__content {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.professor-item__avatar {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.professor-item__name {
-    font-weight: 500;
-    font-size: 0.875rem;
-    color: var(--text-color);
-}
-
-/* Empty list message */
-.empty-list-message {
-    color: var(--text-color-secondary);
-    font-style: italic;
-    text-align: center;
-    margin-top: 1rem;
-    padding: 1rem;
-}
-
-/* Rating container colors */
-.rating-1 { border-color: #ef4444 !important; }
-.rating-2 { border-color: #f97316 !important; }
-.rating-3 { border-color: #f59e0b !important; }
-.rating-4 { border-color: #84cc16 !important; }
-.rating-5 { border-color: #10b981 !important; }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .professor-item {
-        font-size: 0.8rem;
-    }
-
-    .professor-item__avatar {
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .rating-header {
-        font-size: 0.75rem;
+    .rating-grid {
+        gap: 1.5rem;
     }
 }
 </style>

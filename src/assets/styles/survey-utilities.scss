@@ -1,0 +1,217 @@
+/* ==========================================================================
+   SURVEY UTILITIES
+   Shared styles and utilities for survey components
+   ========================================================================== */
+
+/* Survey State Components */
+.survey-state-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  background: var(--code-background);
+  padding: 3rem 2rem;
+  border-radius: 0.5rem;
+  margin: 2rem auto;
+  max-width: 500px;
+}
+
+.survey-state-text {
+  margin: 0;
+  text-align: center;
+  font-size: 1.125rem;
+  color: var(--text-color);
+}
+
+.survey-error-text {
+  color: #ef4444;
+}
+
+.survey-retry-button {
+  margin-top: 1rem;
+}
+
+/* Survey Grid Utilities */
+.survey-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.survey-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.survey-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.25rem;
+}
+
+/* Survey Button Utilities */
+.survey-submit-button {
+  width: 100%;
+  height: 3rem;
+  max-width: 12rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.survey-nav-button {
+  min-width: 2.5rem;
+  height: 2.5rem;
+}
+
+/* Survey Container Utilities */
+.survey-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.survey-section {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* Survey Typography */
+.survey-title {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.survey-subtitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: var(--text-color);
+}
+
+.survey-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+.survey-text-secondary {
+  color: var(--text-color-secondary);
+}
+
+.survey-text-small {
+  font-size: 0.875rem;
+}
+
+/* Survey Spacing Utilities */
+.survey-gap-sm {
+  gap: 0.75rem;
+}
+
+.survey-gap-md {
+  gap: 1rem;
+}
+
+.survey-gap-lg {
+  gap: 1.5rem;
+}
+
+.survey-gap-xl {
+  gap: 2rem;
+}
+
+/* Survey Responsive Utilities */
+@media (min-width: 768px) {
+  .survey-title {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .survey-submit-button {
+    max-width: 17.35rem;
+  }
+
+  .survey-nav-button {
+    min-width: 3rem;
+    height: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .survey-title {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+  }
+
+  .survey-subtitle {
+    font-size: 1.75rem;
+  }
+}
+
+/* Survey Animation Utilities */
+.survey-fade-in {
+  animation: surveyFadeIn 0.3s ease-in-out;
+}
+
+.survey-slide-up {
+  animation: surveySlideUp 0.3s ease-out;
+}
+
+@keyframes surveyFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes surveySlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Survey Focus Utilities */
+.survey-focus-ring:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Survey Accessibility Utilities */
+@media (prefers-reduced-motion: reduce) {
+  .survey-fade-in,
+  .survey-slide-up {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .survey-state-card {
+    border: 2px solid var(--text-color);
+  }
+}
+
+/* Survey Loading Utilities */
+.survey-loading-spinner {
+  margin: 0 auto;
+  display: block;
+}
+
+.survey-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+}
