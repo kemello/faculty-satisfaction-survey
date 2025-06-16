@@ -1,7 +1,7 @@
 <template>
   <div class="layout-wrapper" :class="containerClass">
     <!-- Conditionally render the sidebar -->
-    <app-sidebar v-if="shouldShowSidebar"></app-sidebar>
+<!--    <app-sidebar v-if="shouldShowSidebar"></app-sidebar>-->
     <div class="layout-main-container">
       <div class="layout-main">
         <router-view></router-view>

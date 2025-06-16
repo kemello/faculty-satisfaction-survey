@@ -29,10 +29,7 @@ const router = createRouter({
                 // }
             ]
         },
-        {
-            path: "/team",
-            component: () => import("@/components/ProfessorList.vue")
-        },
+        // Removed obsolete ProfessorList.vue route
         {
             path: "/test",
             component: () => import("@/views/test.vue")
