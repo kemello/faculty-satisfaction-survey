@@ -24,6 +24,8 @@
             <div class="professors-sidebar">
                 <ProfessorsList
                     :available-professors="availableProfessors"
+                    :loading="loading"
+                    :skeleton-count="6"
                     @drop-to-source="onDropToSource"
                     @drag-over-source="onDragOverSource"
                     @drag-enter-source="onDragEnterSource"
@@ -57,6 +59,7 @@
                             :rating="rating"
                             :rating-label="getRatingLabel(rating)"
                             :rated-professors="getRatedProfessors(rating)"
+                            :loading="loading"
                             @drop="onDrop"
                             @dragover="onDragOver"
                             @dragenter="onDragEnter"
