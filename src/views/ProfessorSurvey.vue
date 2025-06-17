@@ -18,20 +18,6 @@
 
     <!-- Survey Interface -->
     <template v-else>
-        <!-- Survey Header -->
-        <div class="card">
-            <div class="survey-title">Оценка преподавателей</div>
-
-            <!-- Question Navigation -->
-            <QuestionNavigation
-                :current-question-index="currentQuestionIndex"
-                :total-questions="questions.length"
-                :can-proceed="canProceedToNextQuestion"
-                @previous-question="previousQuestion"
-                @next-question="nextQuestion"
-            />
-        </div>
-
         <!-- Main Survey Layout -->
         <div class="survey-layout-container">
             <!-- Left Sidebar: Professors List -->
@@ -49,11 +35,16 @@
 
             <!-- Main Content Area -->
             <div class="main-content-area">
-                <!-- Question Display -->
+                <!-- Question Display with Integrated Header -->
                 <QuestionDisplay
                     :question-text="currentQuestion.text"
                     :instruction-text="'Перетащите преподавателей в соответствующие категории оценок'"
                     legend-text="Текущий вопрос"
+                    :current-question-index="currentQuestionIndex"
+                    :total-questions="questions.length"
+                    :can-proceed="canProceedToNextQuestion"
+                    @previous-question="previousQuestion"
+                    @next-question="nextQuestion"
                 />
 
                 <!-- Rating Containers -->
@@ -74,19 +65,19 @@
                         />
                     </div>
                 </div>
+
+                <!-- Submit Button -->
+                <div class="submit-button-container">
+                    <Button
+                        class="submit-button"
+                        :disabled="!isFormValid || loading"
+                        @click="submitSurvey"
+                        label="Отправить анкету"
+                    />
+                </div>
             </div>
         </div>
     </template>
-
-    <!-- Submit Button -->
-    <div class="w-full flex items-center justify-center">
-        <Button
-            class="w-full h-12 max-w-[12rem] sm:max-w-[17.35rem] mx-auto"
-            :disabled="!isFormValid || loading"
-            @click="submitSurvey"
-            label="Отправить анкету"
-        />
-    </div>
 
     <Toast />
 </template>
@@ -100,11 +91,9 @@ import { SurveyService } from '@/service/SurveyService';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
-import Fieldset from 'primevue/fieldset';
 import { useToast } from 'primevue/usetoast';
 
 // Import custom components
-import QuestionNavigation from '@/components/QuestionNavigation.vue';
 import ProfessorsList from '@/components/ProfessorsList.vue';
 import RatingContainer from '@/components/RatingContainer.vue';
 import QuestionDisplay from '@/components/QuestionDisplay.vue';
@@ -422,14 +411,7 @@ const getRatedProfessors = (rating) => {
    Following StudentInfoSurvey.vue structure and styling approach
    ========================================================================== */
 
-/* Survey Title - Following StudentInfoSurvey pattern */
-.survey-title {
-    font-weight: 500;
-    font-size: 1.875rem;
-    margin-bottom: 1rem;
-    justify-content: center;
-    display: flex;
-}
+
 
 /* State Components - Following StudentInfoSurvey card pattern */
 .card.sub-card {
@@ -460,13 +442,15 @@ const getRatedProfessors = (rating) => {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 0;
+    min-height: calc(100vh - 100px);
 }
 
 /* Left Sidebar: Professors List */
 .professors-sidebar {
     width: 100%;
     order: 2;
+    flex-shrink: 0;
 }
 
 /* Main Content Area */
@@ -476,11 +460,16 @@ const getRatedProfessors = (rating) => {
     flex-direction: column;
     gap: 1.5rem;
     order: 1;
+    background: var(--surface-card);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--surface-border);
 }
 
 /* Rating Containers Section */
 .rating-containers-section {
     width: 100%;
+    flex: 1;
 }
 
 /* Rating Grid - Responsive Layout */
@@ -489,6 +478,24 @@ const getRatedProfessors = (rating) => {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
     width: 100%;
+}
+
+/* Submit Button Container */
+.submit-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--surface-border);
+}
+
+.submit-button {
+    width: 100%;
+    height: 3rem;
+    max-width: 17.35rem;
+    font-weight: 600;
+    font-size: 1rem;
 }
 
 /* Loading Spinner */
@@ -501,27 +508,34 @@ const getRatedProfessors = (rating) => {
     .survey-layout-container {
         flex-direction: row;
         gap: 2rem;
-        align-items: flex-start;
+        align-items: stretch;
+        min-height: calc(100vh - 150px);
     }
 
     .professors-sidebar {
         flex: 0 0 350px;
         order: 1;
-        height: calc(100vh - 300px);
-        min-height: 500px;
+        height: auto;
+        min-height: 600px;
         position: sticky;
         top: 1rem;
+        align-self: flex-start;
     }
 
     .main-content-area {
         flex: 1;
         order: 2;
         min-width: 0;
+        padding: 2rem;
     }
 
     .rating-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
+    }
+
+    .submit-button {
+        max-width: 20rem;
     }
 }
 
@@ -529,15 +543,27 @@ const getRatedProfessors = (rating) => {
 @media (min-width: 1024px) {
     .survey-layout-container {
         gap: 3rem;
+        min-height: calc(100vh - 120px);
     }
 
     .professors-sidebar {
         flex: 0 0 400px;
+        min-height: 650px;
+    }
+
+    .main-content-area {
+        padding: 2.5rem;
     }
 
     .rating-grid {
         grid-template-columns: repeat(5, 1fr);
         gap: 1.25rem;
+    }
+
+    .submit-button {
+        max-width: 22rem;
+        height: 3.5rem;
+        font-size: 1.125rem;
     }
 }
 
@@ -545,14 +571,24 @@ const getRatedProfessors = (rating) => {
 @media (min-width: 1280px) {
     .survey-layout-container {
         gap: 4rem;
+        min-height: calc(100vh - 100px);
     }
 
     .professors-sidebar {
         flex: 0 0 450px;
+        min-height: 700px;
+    }
+
+    .main-content-area {
+        padding: 3rem;
     }
 
     .rating-grid {
         gap: 1.5rem;
+    }
+
+    .submit-button {
+        max-width: 24rem;
     }
 }
 </style>
