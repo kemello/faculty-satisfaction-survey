@@ -9,17 +9,25 @@
     >
       <h4 class="section-title">Преподаватели для оценки</h4>
       <div class="professors-list">
-        <ProfessorItem
-          v-for="professor in availableProfessors"
-          :key="professor.id"
-          :professor="professor"
-          @dragstart="$emit('professorDragStart', $event, professor)"
-          @dragend="$emit('professorDragEnd', $event)"
-        />
-        <div v-if="availableProfessors.length === 0" class="empty-state">
-          <p class="empty-state-text">Все преподаватели оценены!</p>
-          <small class="empty-state-hint">Перетащите преподавателя сюда, чтобы убрать оценку</small>
-        </div>
+        <!-- Loading State -->
+        <template v-if="loading">
+          <ProfessorItemSkeleton v-for="i in skeletonCount" :key="`skeleton-${i}`" />
+        </template>
+
+        <!-- Loaded Content -->
+        <template v-else>
+          <ProfessorItem
+            v-for="professor in availableProfessors"
+            :key="professor.id"
+            :professor="professor"
+            @dragstart="$emit('professorDragStart', $event, professor)"
+            @dragend="$emit('professorDragEnd', $event)"
+          />
+          <div v-if="availableProfessors.length === 0" class="empty-state">
+            <p class="empty-state-text">Все преподаватели оценены!</p>
+            <small class="empty-state-hint">Перетащите преподавателя сюда, чтобы убрать оценку</small>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -27,12 +35,21 @@
 
 <script setup>
 import ProfessorItem from './ProfessorItem.vue';
+import ProfessorItemSkeleton from './skeletons/ProfessorItemSkeleton.vue';
 
 // Props
 const props = defineProps({
   availableProfessors: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
+  },
+  skeletonCount: {
+    type: Number,
+    default: 5
   }
 });
 

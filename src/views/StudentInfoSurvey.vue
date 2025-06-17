@@ -1,67 +1,81 @@
 <template>
-    <div class="card">
-        <h1></h1>
-        <div class="font-medium text-3xl mb-4 justify-center flex">Преподаватель глазами студента 2024-2025</div>
+    <!-- Loading State -->
+    <StudentFormSkeleton v-if="loading" />
 
-        <Fieldset legend="Ваш пол">
-            <div class="card sub-card flex items-center justify-center">
-                <SelectButton v-model="gender" :options="genderOptions" optionLabel="name" optionValue="value"/>
-            </div>
-        </Fieldset>
+    <!-- Loaded Content -->
+    <template v-else>
+        <div class="card">
+            <h1></h1>
+            <div class="font-medium text-3xl mb-4 justify-center flex">Преподаватель глазами студента 2024-2025</div>
 
-        <Fieldset legend="Курс">
-            <div class="card sub-card">
-                <div class="flex flex-col gap-4">
-                    <div v-for="year in academicYears" :key="year.value" class="flex items-center gap-2">
-                        <RadioButton :inputId="year.value" name="academicYear"
-                                     :value="year.value" v-model="selectedAcademicYear"/>
-                        <label :for="year.value">{{ year.name }}</label>
+            <Fieldset legend="Ваш пол">
+                <div class="card sub-card flex items-center justify-center">
+                    <SelectButton v-model="gender" :options="genderOptions" optionLabel="name" optionValue="value"/>
+                </div>
+            </Fieldset>
+
+            <Fieldset legend="Курс">
+                <div class="card sub-card">
+                    <div class="flex flex-col gap-4">
+                        <div v-for="year in academicYears" :key="year.value" class="flex items-center gap-2">
+                            <RadioButton :inputId="year.value" name="academicYear"
+                                         :value="year.value" v-model="selectedAcademicYear"/>
+                            <label :for="year.value">{{ year.name }}</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Fieldset>
+            </Fieldset>
 
-        <Fieldset legend="Направление на котором Вы обучаетесь">
-            <div class="card sub-card">
-                <div class="flex flex-col gap-4">
-                    <div v-for="faculty in faculties" :key="faculty.value" class="flex items-center gap-2">
-                        <RadioButton :inputId="faculty.value" name="faculty"
-                                     :value="faculty.value" v-model="selectedFaculty"/>
-                        <label :for="faculty.value">{{ faculty.name }}</label>
+            <Fieldset legend="Направление на котором Вы обучаетесь">
+                <div class="card sub-card">
+                    <div class="flex flex-col gap-4">
+                        <div v-for="faculty in faculties" :key="faculty.value" class="flex items-center gap-2">
+                            <RadioButton :inputId="faculty.value" name="faculty"
+                                         :value="faculty.value" v-model="selectedFaculty"/>
+                            <label :for="faculty.value">{{ faculty.name }}</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Fieldset>
+            </Fieldset>
 
-        <Fieldset legend="Форма обучения">
-            <div class="card sub-card">
-                <div class="flex flex-col gap-4">
-                    <div v-for="mode in studyModes" :key="mode.value" class="flex items-center gap-2">
-                        <RadioButton :inputId="mode.value" name="studyMode"
-                                     :value="mode.value" v-model="selectedStudyMode"/>
-                        <label :for="mode.value">{{ mode.name }}</label>
+            <Fieldset legend="Форма обучения">
+                <div class="card sub-card">
+                    <div class="flex flex-col gap-4">
+                        <div v-for="mode in studyModes" :key="mode.value" class="flex items-center gap-2">
+                            <RadioButton :inputId="mode.value" name="studyMode"
+                                         :value="mode.value" v-model="selectedStudyMode"/>
+                            <label :for="mode.value">{{ mode.name }}</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Fieldset>
+            </Fieldset>
 
-    </div>
+        </div>
 
-    <div class="w-full flex items-center justify-center">
-        <Button class="w-full h-12 max-w-[12rem] sm:max-w-[17.35rem] mx-auto" @click="submitForm" label="Отправить"/>
-    </div>
-
-
+        <div class="w-full flex items-center justify-center">
+            <Button
+                class="w-full h-12 max-w-[12rem] sm:max-w-[17.35rem] mx-auto"
+                @click="submitForm"
+                label="Отправить"
+                :loading="submitting"
+                :disabled="submitting"
+            />
+        </div>
+    </template>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import {useRouter} from 'vue-router'; // Import useRouter
 import {useStudentStore} from "@/stores/studentStore.js";
+import StudentFormSkeleton from '@/components/skeletons/StudentFormSkeleton.vue';
 
 const studentStore = useStudentStore();
-
 const router = useRouter(); // Initialize router
+
+// Loading states
+const loading = ref(true);
+const submitting = ref(false);
 
 const gender = ref("");
 const genderOptions = ref([
@@ -95,7 +109,16 @@ const studyModes = ref([
 ]);
 const selectedStudyMode = ref("");
 
+// Simulate initial loading
+onMounted(() => {
+    setTimeout(() => {
+        loading.value = false;
+    }, 1000);
+});
+
 const submitForm = async () => {
+    submitting.value = true;
+
     const formData = {
         gender: gender.value,
         academicYear: selectedAcademicYear.value,
@@ -126,6 +149,8 @@ const submitForm = async () => {
         }
     } catch (error) {
         console.error('Error:', error);
+    } finally {
+        submitting.value = false;
     }
 };
 

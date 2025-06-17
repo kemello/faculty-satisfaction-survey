@@ -1,5 +1,9 @@
 <template>
-  <div class="question-display-container">
+  <!-- Loading State -->
+  <QuestionDisplaySkeleton v-if="loading" />
+
+  <!-- Loaded Content -->
+  <div v-else class="question-display-container">
     <!-- Survey Title -->
     <div class="survey-title-section">
       <h1 class="survey-title">Оценка преподавателей</h1>
@@ -34,7 +38,9 @@
 
     <!-- Question Content -->
     <div class="question-content-section">
-
+      <div class="question-legend-wrapper">
+        <span class="question-legend">{{ legendText }}</span>
+      </div>
       <div class="question-content">
         <h3 class="question-text">{{ questionText }}</h3>
         <p v-if="instructionText" class="instruction-text">{{ instructionText }}</p>
@@ -46,6 +52,7 @@
 <script setup>
 import { computed } from 'vue';
 import Button from 'primevue/button';
+import QuestionDisplaySkeleton from './skeletons/QuestionDisplaySkeleton.vue';
 
 // Props
 const props = defineProps({
@@ -70,6 +77,10 @@ const props = defineProps({
     required: true
   },
   canProceed: {
+    type: Boolean,
+    default: false
+  },
+  loading: {
     type: Boolean,
     default: false
   }
@@ -156,6 +167,10 @@ const isLastQuestion = computed(() => props.currentQuestionIndex === props.total
 /* Question Content Section */
 .question-content-section {
   width: 100%;
+}
+
+.question-legend-wrapper {
+  margin-bottom: 1rem;
 }
 
 .question-legend {

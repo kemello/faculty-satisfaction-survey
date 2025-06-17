@@ -1,5 +1,10 @@
 <template>
+  <!-- Loading State -->
+  <RatingContainerSkeleton v-if="loading" />
+
+  <!-- Loaded Content -->
   <div
+    v-else
     class="rating-container"
     :class="`rating-container--${rating}`"
     @dragover.prevent="handleDragOver"
@@ -29,6 +34,7 @@
 
 <script setup>
 import ProfessorItem from './ProfessorItem.vue';
+import RatingContainerSkeleton from './skeletons/RatingContainerSkeleton.vue';
 
 // Props
 const props = defineProps({
@@ -43,6 +49,10 @@ const props = defineProps({
   ratedProfessors: {
     type: Array,
     default: () => []
+  },
+  loading: {
+    type: Boolean,
+    default: false
   }
 });
 

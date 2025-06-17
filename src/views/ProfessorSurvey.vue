@@ -37,12 +37,13 @@
             <div class="main-content-area">
                 <!-- Question Display with Integrated Header -->
                 <QuestionDisplay
-                    :question-text="currentQuestion.text"
+                    :question-text="currentQuestion.text || ''"
                     :instruction-text="'Перетащите преподавателей в соответствующие категории оценок'"
                     legend-text="Текущий вопрос"
                     :current-question-index="currentQuestionIndex"
                     :total-questions="questions.length"
                     :can-proceed="canProceedToNextQuestion"
+                    :loading="loading"
                     @previous-question="previousQuestion"
                     @next-question="nextQuestion"
                 />
