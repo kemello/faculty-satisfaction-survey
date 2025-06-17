@@ -449,7 +449,7 @@ const getRatedProfessors = (rating) => {
 /* Left Sidebar: Professors List */
 .professors-sidebar {
     width: 100%;
-    order: 2;
+    order: 1; /* Show at top on mobile */
     flex-shrink: 0;
 }
 
@@ -459,7 +459,7 @@ const getRatedProfessors = (rating) => {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    order: 1;
+    order: 2; /* Show below professors on mobile */
     background: var(--surface-card);
     border-radius: 0.5rem;
     padding: 1.5rem;
@@ -474,10 +474,19 @@ const getRatedProfessors = (rating) => {
 
 /* Rating Grid - Responsive Layout */
 .rating-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
     gap: 0.75rem;
     width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 0.5rem;
+    scroll-snap-type: x mandatory;
+}
+
+.rating-grid > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+    min-width: 200px;
 }
 
 /* Submit Button Container */
@@ -513,7 +522,7 @@ const getRatedProfessors = (rating) => {
     }
 
     .professors-sidebar {
-        flex: 0 0 350px;
+        flex: 0 0 150px;
         order: 1;
         height: auto;
         min-height: 600px;
@@ -530,8 +539,15 @@ const getRatedProfessors = (rating) => {
     }
 
     .rating-grid {
+        display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
+        overflow: visible;
+    }
+
+    .rating-grid > * {
+        min-width: auto;
+        scroll-snap-align: none;
     }
 
     .submit-button {
@@ -547,7 +563,7 @@ const getRatedProfessors = (rating) => {
     }
 
     .professors-sidebar {
-        flex: 0 0 400px;
+        flex: 0 0 200px;
         min-height: 650px;
     }
 
@@ -556,8 +572,10 @@ const getRatedProfessors = (rating) => {
     }
 
     .rating-grid {
+        display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 1.25rem;
+        overflow: visible;
     }
 
     .submit-button {
@@ -575,7 +593,7 @@ const getRatedProfessors = (rating) => {
     }
 
     .professors-sidebar {
-        flex: 0 0 450px;
+        flex: 0 0 250px;
         min-height: 700px;
     }
 

@@ -25,6 +25,7 @@ declare module 'vue' {
     Menu: typeof import('primevue/menu')['default']
     Panel: typeof import('primevue/panel')['default']
     ProfessorItem: typeof import('./src/components/ProfessorItem.vue')['default']
+    ProfessorItemSkeleton: typeof import('./src/components/skeletons/ProfessorItemSkeleton.vue')['default']
     ProfessorList: typeof import('./src/components/ProfessorList.vue')['default']
     ProfessorListMobile: typeof import('./src/components/ProfessorListMobile.vue')['default']
     ProfessorsList: typeof import('./src/components/ProfessorsList.vue')['default']

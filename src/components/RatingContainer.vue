@@ -88,10 +88,14 @@ const handleDrop = (event) => {
   border-radius: 0.5rem;
   padding: 0.75rem;
   min-height: 180px;
+  height: auto; /* Allow dynamic height growth */
+  min-width: 200px; /* Prevent shrinking on mobile */
+  width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible; /* Allow content to expand */
   box-sizing: border-box;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0; /* Prevent shrinking in flex containers */
 }
 
 .rating-container:hover {
@@ -151,8 +155,11 @@ const handleDrop = (event) => {
 
 .rating-content {
   min-height: 100px;
-  max-height: 200px;
-  overflow-y: auto;
+  max-height: none; /* Remove height restriction for dynamic growth */
+  overflow-y: visible; /* Allow content to expand naturally */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .drop-zone {

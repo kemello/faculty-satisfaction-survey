@@ -12,8 +12,8 @@
           icon="pi pi-arrow-left"
           @click="$emit('previousQuestion')"
           :disabled="isFirstQuestion"
-          class="nav-button nav-button--prev"
-          severity="secondary"
+          :class="['nav-button', 'nav-button--prev', { 'nav-button--active': !isFirstQuestion }]"
+          :severity="isFirstQuestion ? 'secondary' : 'primary'"
           text
         />
         <div class="question-counter">
@@ -25,8 +25,8 @@
           icon="pi pi-arrow-right"
           @click="$emit('nextQuestion')"
           :disabled="isLastQuestion || !canProceed"
-          class="nav-button nav-button--next"
-          severity="secondary"
+          :class="['nav-button', 'nav-button--next', { 'nav-button--active': !isLastQuestion && canProceed }]"
+          :severity="(isLastQuestion || !canProceed) ? 'secondary' : 'primary'"
           text
         />
       </div>
@@ -34,9 +34,7 @@
 
     <!-- Question Content -->
     <div class="question-content-section">
-      <div class="question-legend-wrapper">
-        <span class="question-legend">{{ legendText }}</span>
-      </div>
+
       <div class="question-content">
         <h3 class="question-text">{{ questionText }}</h3>
         <p v-if="instructionText" class="instruction-text">{{ instructionText }}</p>
@@ -142,15 +140,22 @@ const isLastQuestion = computed(() => props.currentQuestionIndex === props.total
 .nav-button {
   min-width: 2.5rem;
   height: 2.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-button--active {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.nav-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Question Content Section */
 .question-content-section {
   width: 100%;
-}
-
-.question-legend-wrapper {
-  margin-bottom: 1rem;
 }
 
 .question-legend {
