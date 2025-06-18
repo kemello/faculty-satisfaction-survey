@@ -24,21 +24,37 @@ const loading = ref(true);
 const error = ref(null);
 
 onMounted(async () => {
-  try {
-    const response = await axios.get('http://localhost:8080/api/professors/by-assignments', {
-      params: {
-        faculty: 'IST',
-        academicYear: 'FIRST_YEAR',
-        studyMode: 'FULL_TIME'
-      }
-    });
-    
-    professors.value = response.data;
-  } catch (err) {
-    error.value = `Error fetching data: ${err.message}`;
-  } finally {
-    loading.value = false;
+  console.log('=== TESTING BACKEND CONNECTIVITY ===');
+
+  // Test both endpoints
+  const endpoints = [
+    'http://localhost:8080/api/professors/by-assignment',
+    'http://localhost:8080/api/professors/by-assignments'
+  ];
+
+  for (const endpoint of endpoints) {
+    try {
+      console.log(`Testing endpoint: ${endpoint}`);
+      const response = await axios.get(endpoint, {
+        params: {
+          faculty: 'IST',
+          academicYear: 'FIRST_YEAR',
+          studyMode: 'FULL_TIME'
+        }
+      });
+
+      console.log(`✅ ${endpoint} - Status:`, response.status);
+      console.log(`✅ ${endpoint} - Data:`, response.data);
+      professors.value = response.data;
+      break; // Use the first successful endpoint
+    } catch (err) {
+      console.error(`❌ ${endpoint} - Error:`, err.message);
+      console.error(`❌ ${endpoint} - Response:`, err.response?.data);
+      error.value = `Error fetching data: ${err.message}`;
+    }
   }
+
+  loading.value = false;
 });
 </script>
 

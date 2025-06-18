@@ -62,16 +62,24 @@
             />
         </div>
     </template>
+
+    <!-- Toast for notifications -->
+    <Toast />
 </template>
 
 <script setup>
 import {ref, onMounted} from 'vue';
 import {useRouter} from 'vue-router'; // Import useRouter
 import {useStudentStore} from "@/stores/studentStore.js";
+import {useSurveyTokenStore} from "@/stores/surveyTokenStore.js";
 import StudentFormSkeleton from '@/components/skeletons/StudentFormSkeleton.vue';
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 
 const studentStore = useStudentStore();
+const surveyTokenStore = useSurveyTokenStore();
 const router = useRouter(); // Initialize router
+const toast = useToast();
 
 // Loading states
 const loading = ref(true);
@@ -109,8 +117,16 @@ const studyModes = ref([
 ]);
 const selectedStudyMode = ref("");
 
-// Simulate initial loading
+// Check if user has valid token and redirect if not
 onMounted(() => {
+    // Check if user came from token validation
+    if (!surveyTokenStore.isTokenValidated) {
+        console.warn('No validated token found. Redirecting to homepage.');
+        router.push({ name: 'homepage' });
+        return;
+    }
+
+    // Simulate initial loading
     setTimeout(() => {
         loading.value = false;
     }, 1000);
@@ -126,29 +142,33 @@ const submitForm = async () => {
         studyMode: selectedStudyMode.value
     };
 
-    console.log('Form Data:', formData); // Add this line
+    console.log('Form Data:', formData);
 
     try {
-        const response = await fetch('http://localhost:8080/api/students', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+        // Store student information in the survey token store
+        surveyTokenStore.setStudentInfo(formData);
+
+        // Also store in legacy student store for backward compatibility
+        studentStore.setStudentData(formData);
+
+        // Navigate to professor survey with token-based flow
+        await router.push({ name: 'professor-survey' });
+
+        toast.add({
+            severity: 'success',
+            summary: 'Успешно',
+            detail: 'Информация сохранена. Переходим к оценке преподавателей.',
+            life: 3000
         });
 
-        console.log("Response status:", response.status); // Debugging Log
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Success:', result);
-            studentStore.setStudentData(formData);
-            await router.push({name: 'professor-survey'}); // Redirect to ProfessorSurvey.vue
-        } else {
-            console.error('Error:', response.statusText);
-        }
     } catch (error) {
         console.error('Error:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Ошибка',
+            detail: 'Не удалось сохранить информацию. Попробуйте еще раз.',
+            life: 3000
+        });
     } finally {
         submitting.value = false;
     }

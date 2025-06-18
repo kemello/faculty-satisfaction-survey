@@ -45,6 +45,8 @@ declare module 'vue' {
     Splitter: typeof import('primevue/splitter')['default']
     SplitterPanel: typeof import('primevue/splitterpanel')['default']
     StudentFormSkeleton: typeof import('./src/components/skeletons/StudentFormSkeleton.vue')['default']
+    SurveyCard: typeof import('./src/components/SurveyCard.vue')['default']
+    SurveyCardSkeleton: typeof import('./src/components/skeletons/SurveyCardSkeleton.vue')['default']
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
@@ -53,6 +55,7 @@ declare module 'vue' {
     Tag: typeof import('primevue/tag')['default']
     Textarea: typeof import('primevue/textarea')['default']
     Toast: typeof import('primevue/toast')['default']
+    TokenValidationModal: typeof import('./src/components/TokenValidationModal.vue')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
   }
 }

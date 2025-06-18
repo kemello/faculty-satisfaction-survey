@@ -88,10 +88,13 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 import { useProfessorStore } from '@/stores/professorStore';
 import { useStudentStore } from '@/stores/studentStore';
+import { useSurveyTokenStore } from '@/stores/surveyTokenStore';
 import { getProfessorImage } from '@/utils/professorUtils';
 import { SurveyService } from '@/service/SurveyService';
+import { SurveyAccessService } from '@/service/SurveyAccessService';
 import Toast from 'primevue/toast';
 import ProgressSpinner from 'primevue/progressspinner';
 import Button from 'primevue/button';
@@ -103,9 +106,11 @@ import RatingContainer from '@/components/RatingContainer.vue';
 import QuestionDisplay from '@/components/QuestionDisplay.vue';
 import axios from 'axios';
 
+const router = useRouter();
 const toast = useToast();
 const professorStore = useProfessorStore();
 const studentStore = useStudentStore();
+const surveyTokenStore = useSurveyTokenStore();
 
 // Get the selected professor from the store
 const selectedProfessor = computed(() => professorStore.selectedProfessor);
@@ -148,29 +153,52 @@ const canProceedToNextQuestion = computed(() => {
 
 // Fetch professors and store them in the professor store
 const fetchProfessorsForSurvey = async () => {
-  if (!studentStore.formData) {
+  // Check if we have student info from the survey token store
+  const studentInfo = surveyTokenStore.studentInfo || studentStore.formData;
+
+  console.log('=== DEBUGGING PROFESSOR FETCH ===');
+  console.log('Survey token store student info:', surveyTokenStore.studentInfo);
+  console.log('Student store form data:', studentStore.formData);
+  console.log('Final student info used:', studentInfo);
+
+  if (!studentInfo) {
     console.warn("No student information available for fetching professors");
+    error.value = "No student information available for fetching professors";
     return;
   }
 
   try {
-    const { faculty, academicYear, studyMode } = studentStore.formData;
+    const { faculty, academicYear, studyMode } = studentInfo;
+
+    console.log('Student info parameters:', { faculty, academicYear, studyMode });
 
     if (!academicYear) {
       throw new Error("Academic year is required");
     }
 
-    const response = await axios.get('http://localhost:8080/api/professors/by-assignments', {
-      params: { faculty, academicYear, studyMode }
-    });
+    console.log('Calling SurveyAccessService.getProfessorsByAssignment...');
+
+    // Set loading state
+    loading.value = true;
+    error.value = null;
+
+    // Use the new SurveyAccessService method
+    const professors = await SurveyAccessService.getProfessorsByAssignment(studentInfo);
+
+    console.log('API response - professors:', professors);
 
     // Store professors in the professor store
-    professorStore.professors = response.data || [];
-    console.log('Professors loaded for survey:', professorStore.professors);
+    professorStore.professors = professors;
+    console.log('Professors stored in store:', professorStore.professors);
+    console.log('Computed professors value:', professors.value);
+
   } catch (err) {
     console.error('Failed to fetch professors for survey:', err);
+    error.value = `Failed to fetch professors: ${err.message}`;
     // Set empty array as fallback
     professorStore.professors = [];
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -226,6 +254,18 @@ const submitSurvey = async () => {
   if (!isFormValid.value) return;
 
   try {
+    console.log('=== SURVEY SUBMISSION START ===');
+
+    // Validate required data using store validation method
+    const validation = surveyTokenStore.validateSubmissionData();
+    console.log('Validation result:', validation);
+
+    if (!validation.isValid) {
+      throw new Error(`Отсутствуют обязательные данные: ${validation.missingFields.join(', ')}`);
+    }
+
+    console.log('Survey context:', surveyTokenStore.getSurveyContext());
+
     // Format the responses for submission
     const formattedResponses = [];
 
@@ -241,33 +281,57 @@ const submitSurvey = async () => {
       });
     });
 
-    const surveyData = {
-      surveyId: 1,
-      responses: formattedResponses
-    };
+    console.log('Formatted responses:', formattedResponses);
+    console.log('Student info for submission:', surveyTokenStore.studentInfo);
+    console.log('Survey ID for submission:', surveyTokenStore.surveyData.id);
 
-    console.log('Submitting survey data:', surveyData);
+    // Use the new token-based submission with surveyId
+    const result = await SurveyAccessService.submitSurveyWithToken(
+      surveyTokenStore.validatedToken,
+      surveyTokenStore.surveyData.id,
+      surveyTokenStore.studentInfo,
+      formattedResponses
+    );
 
-    const response = await fetch('http://localhost:8080/api/surveys/assign-responses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(surveyData)
+    console.log('Submission result:', result);
+
+    // Mark survey as submitted in the store
+    surveyTokenStore.setSubmitted(result.hash || 'submitted');
+
+    toast.add({
+      severity: 'success',
+      summary: 'Успешно',
+      detail: 'Опрос успешно отправлен!',
+      life: 5000
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to submit survey: ${response.status} ${errorText}`);
-    }
+    // Redirect to homepage after successful submission
+    setTimeout(() => {
+      router.push({ name: 'homepage' });
+    }, 2000);
 
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Survey submitted successfully', life: 3000 });
   } catch (err) {
-    console.error('Failed to submit survey:', err);
-    toast.add({ severity: 'error', summary: 'Error', detail: `Failed to submit survey: ${err.message}`, life: 3000 });
+    console.error('=== SURVEY SUBMISSION FAILED ===');
+    console.error('Error details:', err);
+
+    toast.add({
+      severity: 'error',
+      summary: 'Ошибка отправки',
+      detail: err.message || 'Не удалось отправить опрос',
+      life: 7000
+    });
   }
 };
 
 // Fetch questions and professors when component is mounted
 onMounted(async () => {
+  // Check if user has completed the token validation and student info steps
+  if (!surveyTokenStore.canProceedToProfessorSurvey()) {
+    console.warn('Cannot proceed to professor survey. Redirecting to homepage.');
+    router.push({ name: 'homepage' });
+    return;
+  }
+
   // First, ensure we have professors loaded
   await fetchProfessorsForSurvey();
   // Then fetch questions
